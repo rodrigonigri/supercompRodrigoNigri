@@ -41,12 +41,19 @@ bool verifica_calendario(filme f, vector<int> v){
     return true;
 }
 
+void altera_calendario(filme f, vector<int>& v){
+    for(int i = f.inicio; i < f.fim; i++){
+        v[i] = true;
+    }
+}
+
 
 bool my_compare(filme a, filme b){
     return a.fim < b.fim; // ordenando pelo mais leve
 }
 
 int main(){
+    cout << "1";
     int numero_filmes;
     int numero_categorias;
     vector<filme> filmes; // vetor que armazena todos os filmes
@@ -55,8 +62,9 @@ int main(){
     vector<int> organizador_de_horarios;
     int eliminados = 0; // filmes que o gerador de input gerou que nao se encaixam nas regras do problema.
 
+    // CRIANDO VETOR DE 24 POSICOES TODAS FALSE PARA SABER QUAIS HORARIOS JA FORAM OS FILMES.
     for(int i = 0; i < 24; i++){
-        organizador_de_horarios.push_back(0);
+        organizador_de_horarios.push_back(false);
     }
 
     cin >> numero_filmes >> numero_categorias;
@@ -64,6 +72,8 @@ int main(){
     
     maximo_categorias.push_back(0); // so pra ficar alinhado (cat1 na posicao 1, cat2 na posicao 2...)
 
+    
+    // CRIANDO O VETOR QUE INDICA QUANTOS FILMES PODE VER POR CATEGORIA
     int max;
     for(int i = 0; i < numero_categorias; i++){
         cin >> max;
@@ -71,6 +81,7 @@ int main(){
 
     }
 
+    // CRIANDO O VETOR CONTENDO TODOS OS FILMES, JA DESCARTNDO OS DEPOIS DAS 00:00
     int hora_inicio, hora_fim, cat;
     for(int i = 0; i < numero_filmes; i++){
         cin >> hora_inicio;
@@ -88,6 +99,8 @@ int main(){
 
     }
 
+    numero_filmes = numero_filmes - eliminados;
+
     sort(filmes.begin(), filmes.end(), my_compare);
     default_random_engine generator(10); // random com a seed 10
 
@@ -95,20 +108,21 @@ int main(){
     for(auto& this_film : filmes){
         uniform_real_distribution<double> distribution(0.0, 1.0);
 
-        cout << "aqui";
 
         if(verifica_calendario(this_film, organizador_de_horarios) && maximo_categorias[this_film.categoria] > 0){
             cronograma.push_back(this_film);
+            altera_calendario(this_film, organizador_de_horarios);
             maximo_categorias[this_film.categoria] -= 1;
         }
 
-        if (distribution(generator) > 0.75){
-            uniform_int_distribution<int> distribution(i, numero_filmes - eliminados - 1);
+        if (distribution(generator) > 0.75 && i < numero_filmes){
+            uniform_int_distribution<int> distribution(i, numero_filmes - 1);
             int p = distribution(generator);
 
-            if(verifica_calendario(this_film, organizador_de_horarios) && maximo_categorias[this_film.categoria] > 0){
-                cronograma.push_back(this_film);
-                maximo_categorias[this_film.categoria] -= 1;
+            if(verifica_calendario(filmes[p], organizador_de_horarios) && maximo_categorias[this_film.categoria] > 0){
+                cronograma.push_back(filmes[p]);
+                altera_calendario(filmes[p], organizador_de_horarios);
+                maximo_categorias[filmes[p].categoria] -= 1;
                 filmes.erase(filmes.begin()+p-1);
                 numero_filmes = numero_filmes - 1;
             }
