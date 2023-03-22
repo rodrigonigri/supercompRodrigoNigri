@@ -31,6 +31,17 @@ struct filme {
     int categoria;
 };
 
+
+bool verifica_calendario(filme f, vector<int> v){
+    for(int i = f.inicio; i < f.fim; i++){
+        if(v.at(i) == 1){
+            return false;
+        }
+    }
+    return true;
+}
+
+
 bool my_compare(filme a, filme b){
     return a.fim < b.fim; // ordenando pelo mais leve
 }
@@ -41,12 +52,17 @@ int main(){
     vector<filme> filmes; // vetor que armazena todos os filmes
     vector<filme> cronograma; // vetor que armazena os filmes que serao vistos no dia
     vector<int> maximo_categorias; // vetor que diz quantos filmes por categoria {'0',3,7,5,2}
+    vector<int> organizador_de_horarios;
+    int eliminados = 0; // filmes que o gerador de input gerou que nao se encaixam nas regras do problema.
 
+    for(int i = 0; i < 24; i++){
+        organizador_de_horarios.push_back(0);
+    }
 
     cin >> numero_filmes >> numero_categorias;
 
     
-    maximo_categorias.push_back(0);
+    maximo_categorias.push_back(0); // so pra ficar alinhado (cat1 na posicao 1, cat2 na posicao 2...)
 
     int max;
     for(int i = 0; i < numero_categorias; i++){
@@ -67,22 +83,38 @@ int main(){
 
         if(hora_fim > hora_inicio){
             filmes.push_back({i, hora_inicio,hora_fim, cat});
+            eliminados = eliminados + 1;
         }
-        
 
     }
 
     sort(filmes.begin(), filmes.end(), my_compare);
+    default_random_engine generator(10); // random com a seed 10
 
-    int hora_atual = 0;
+    int i = 1;
     for(auto& this_film : filmes){
+        uniform_real_distribution<double> distribution(0.0, 1.0);
 
-        if(hora_atual <= this_film.inicio && maximo_categorias[this_film.categoria] > 0){
+        cout << "aqui";
+
+        if(verifica_calendario(this_film, organizador_de_horarios) && maximo_categorias[this_film.categoria] > 0){
             cronograma.push_back(this_film);
-            hora_atual = this_film.fim;
             maximo_categorias[this_film.categoria] -= 1;
-
         }
+
+        if (distribution(generator) > 0.75){
+            uniform_int_distribution<int> distribution(i, numero_filmes - eliminados - 1);
+            int p = distribution(generator);
+
+            if(verifica_calendario(this_film, organizador_de_horarios) && maximo_categorias[this_film.categoria] > 0){
+                cronograma.push_back(this_film);
+                maximo_categorias[this_film.categoria] -= 1;
+                filmes.erase(filmes.begin()+p-1);
+                numero_filmes = numero_filmes - 1;
+            }
+        }
+
+        i += 1;
 
     }
     cout<<"\n\n\n";
