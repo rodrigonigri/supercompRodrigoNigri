@@ -3,6 +3,7 @@
 #include<algorithm>
 #include <random>
 #include <stdlib.h>
+#include <fstream>
 
 #define RESET   "\033[0m"
 #define BLACK   "\033[30m"      /* Black */
@@ -33,6 +34,13 @@ struct filme {
 
 bool my_compare(filme a, filme b){
     return a.fim < b.fim; // ordenando pelo mais leve
+}
+
+void createOutput(int numero_filmes, int tempo_de_tela){
+    ofstream output;
+    output.open("output_gulosa.txt", std::ios_base::app);
+    output << numero_filmes << " " << tempo_de_tela << " " << (double)tempo_de_tela/numero_filmes << endl;
+    output.close();
 }
 
 int main(){
@@ -85,6 +93,16 @@ int main(){
         }
 
     }
+
+    int numero_filmes_vistos = 0;
+    int tempo_de_tela = 0;
+    for(auto& this_film:cronograma){
+        numero_filmes_vistos += 1;
+        tempo_de_tela += this_film.fim - this_film.inicio;
+    }
+
+    createOutput(numero_filmes_vistos, tempo_de_tela);
+
     cout<<"\n\n\n";
     
     cout << "|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|" << endl;
