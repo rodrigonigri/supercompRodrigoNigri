@@ -62,9 +62,7 @@ int main() {
     }
 
     cout << endl;
-
- 
- 
+    
     for(auto& this_item : items2){
         //distribution(generator); // gera número
 

@@ -109,6 +109,7 @@ int main(){
     numero_filmes = numero_filmes - eliminados;
 
     sort(filmes.begin(), filmes.end(), my_compare);
+    //unsigned seed = chrono::system_clock::now().time_since_epoch().count();
     default_random_engine generator(10); // random com a seed 10
 
     int i = 1;
