@@ -35,7 +35,7 @@ struct filme {
 
 
 int main(){
-    int numero_filmes; // inteiro que armazena o numero de filmes
+    int numero_filmes;
     int numero_categorias;
     vector<filme> filmes; // vetor que armazena todos os filmes
     vector<filme> cronograma; // vetor que armazena os filmes que serao vistos no dia
@@ -44,17 +44,19 @@ int main(){
 
     cin >> numero_filmes >> numero_categorias;
 
+
     maximo_categorias.push_back(0);
 
-    //////// PREENCHE O VETOR DAS CATEGORIAS ////////
     int max;
     for(int i = 0; i < numero_categorias; i++){
         cin >> max;
         maximo_categorias.push_back(max);
     }
 
-    //////// PREENCHE O VETOR DOS FILMES ////////
+    
+
     int hora_inicio, hora_fim, cat;
+
     for(int i = 0; i < numero_filmes; i++){
         cin >> hora_inicio;
         cin >> hora_fim;
@@ -69,8 +71,53 @@ int main(){
         }
     }
 
-    for(auto this_film:filmes){
-        
+    // Função para verificar se o cronograma atual viola as restrições de categorias
+    auto verificaRestricoes = [](const vector<filme>& cronograma, const vector<int>& maximo_categorias) {
+        vector<int> contador_categorias(maximo_categorias.size(), 0);
+        for (const auto& film : cronograma) {
+            contador_categorias[film.categoria]++;
+        }
+        for (size_t i = 1; i < maximo_categorias.size(); i++) {
+            if (contador_categorias[i] > maximo_categorias[i]) {
+                return false;
+            }
+        }
+        return true;
+    };
+
+    vector<filme> melhor_cronograma; // Armazena o melhor cronograma encontrado
+    int max_filmes_vistos = 0; // Armazena o número máximo de filmes vistos
+
+    // Percorre todas as combinações possíveis de filmes
+    int num_combinacoes = 1 << filmes.size();
+    for (int i = 0; i < num_combinacoes; i++) {
+        vector<filme> temp_cronograma;
+        for (int j = 0; j < (int)filmes.size(); j++) {
+            if ((i >> j) & 1) {
+                temp_cronograma.push_back(filmes[j]);
+            }
+        }
+
+        if (verificaRestricoes(temp_cronograma, maximo_categorias)) {
+            if ((int)temp_cronograma.size() > max_filmes_vistos) {
+                max_filmes_vistos = temp_cronograma.size();
+                melhor_cronograma = temp_cronograma;
+            }
+        }
     }
 
+    // Imprime o melhor cronograma
+    cout << "Melhor cronograma:" << endl;
+    for (const auto& film : melhor_cronograma) {
+        cout << "Filme " << film.id << " - Início: " << film.inicio << " Fim: " << film.fim << " Categoria: " << film.categoria << endl;
+    }
+
+    return 0;
 }
+
+
+
+
+
+
+
