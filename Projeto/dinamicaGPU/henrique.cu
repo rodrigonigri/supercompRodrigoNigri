@@ -25,17 +25,17 @@ struct analisa_configuracao {
     int *categorias;
 
     analisa_configuracao(int _n_filmes,
-                        int _n_categorias,
-                        int* _start_time,
-                        int* _end_time,
-                        int* _cat_id,
-                        int* _categorias
+                         int _n_categorias,
+                         int* _start_time,
+                         int* _end_time,
+                         int* _cat_id,
+                         int* _categorias
                         ): n_filmes(_n_filmes), 
-                        n_categorias(_n_categorias),
-                        start_time(_start_time),
-                        end_time(_end_time),
-                        cat_id(_cat_id),
-                        categorias(_categorias)
+                           n_categorias(_n_categorias),
+                           start_time(_start_time),
+                           end_time(_end_time),
+                           cat_id(_cat_id),
+                           categorias(_categorias)
                         {};
 
     __device__
@@ -114,14 +114,14 @@ int main(){
 
 
     thrust::transform(device_configuration.begin(), device_configuration.end(), device_configuration.begin(), 
-                    analisa_configuracao(n_filmes, 
-                                        n_categorias,
-                                        thrust::raw_pointer_cast(device_start_time.data()), 
-                                        thrust::raw_pointer_cast(device_end_time.data()),
-                                        thrust::raw_pointer_cast(device_cat_id.data()),
-                                        thrust::raw_pointer_cast(device_categorias.data())
-                                        )
-                    );
+                      analisa_configuracao(n_filmes, 
+                                           n_categorias,
+                                           thrust::raw_pointer_cast(device_start_time.data()), 
+                                           thrust::raw_pointer_cast(device_end_time.data()),
+                                           thrust::raw_pointer_cast(device_cat_id.data()),
+                                           thrust::raw_pointer_cast(device_categorias.data())
+                                          )
+                     );
 
     cout << "Aplicou o Transform" << endl;
 
